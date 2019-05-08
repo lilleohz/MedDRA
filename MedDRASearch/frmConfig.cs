@@ -13,7 +13,13 @@ namespace MedDRASearch
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            DBUtility.ConfigHelper.WriteDBConfig(Application.StartupPath + "\\Config.xml", txtServer.Text, txtPort.Text, cbbDatabases.Text, txtUID.Text, txtPWD.Text);
+            DBUtility.ConfigHelper.DBConn dc = new DBUtility.ConfigHelper.DBConn();
+            dc.Server = txtServer.Text;
+            dc.Port = txtPort.Text;
+            dc.Database = cbbDatabases.Text;
+            dc.UID = txtUID.Text;
+            dc.PWD = txtPWD.Text;
+            DBUtility.ConfigHelper.WriteDBConfig(Application.StartupPath + "\\Config.xml", dc);
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

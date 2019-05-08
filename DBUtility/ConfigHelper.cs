@@ -18,13 +18,9 @@ namespace MedDRASearch.DBUtility
         /// <returns>数据库连接字符串</returns>
         public static string ReadDBConnectString(string ConfigFile)
         {
-            string strdb = "";
+            string strdb;
             DBConn dc = GetDBConfig(ConfigFile);
-            strdb = "Server=" + dc.Server;
-            strdb += ";Port=" + dc.Port;
-            strdb += ";Database=" + dc.Database;
-            strdb += ";UID=" + dc.UID;
-            strdb += ";PWD=" + dc.PWD;
+            strdb = $"Server={dc.Server};Port={dc.Port};Database={dc.Database};UID={dc.UID};PWD={dc.PWD}";
 
             return strdb;
         }
@@ -37,10 +33,12 @@ namespace MedDRASearch.DBUtility
         public static DBConn GetDBConfig(string ConfigFile)
         {
             DBConn dc = new DBConn();
+            //判断配置文件是否存在
             if (!File.Exists(ConfigFile))
                 WriteDBConfig(ConfigFile, dc);
 
             XmlDocument xd = new XmlDocument();
+            //载入配置文件，如果载入失败，重新初始化配置文件
             try
             {
                 xd.Load(ConfigFile);
@@ -50,7 +48,7 @@ namespace MedDRASearch.DBUtility
                 WriteDBConfig(ConfigFile, dc);
                 xd.Load(ConfigFile);
             }
-            XmlNode rootxn = xd.SelectSingleNode("MedMDRSearch");
+            XmlNode rootxn = xd.SelectSingleNode("MedDRASearch");
             XmlNodeList xnl = rootxn.ChildNodes;
             foreach (XmlNode xn in xnl)
             {
@@ -73,11 +71,7 @@ namespace MedDRASearch.DBUtility
         /// 把数据库配置写入XML文件中
         /// </summary>
         /// <param name="ConfigFile">配置文件名称</param>
-        /// <param name="server">服务器地址</param>
-        /// <param name="port">服务器端口号</param>
-        /// <param name="database">数据集名称</param>
-        /// <param name="uid">用户名</param>
-        /// <param name="pwd">密码</param>
+        /// <param name="dbconn">数据库连接信息对象</param>
         /// <returns>保存成功返回true</returns>
         public static bool WriteDBConfig(string ConfigFile,DBConn dbconn)
         {
@@ -85,7 +79,7 @@ namespace MedDRASearch.DBUtility
             XmlNode header = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
             xmlDoc.AppendChild(header);
             //创建一级节点
-            XmlElement rootNode = xmlDoc.CreateElement("MedMDRSearch");
+            XmlElement rootNode = xmlDoc.CreateElement("MedDRASearch");
             XmlElement xn = xmlDoc.CreateElement("DBConnection");
             xn.SetAttribute("Server", DESEncrypt.Encrypt(dbconn.Server));
             xn.SetAttribute("Port", DESEncrypt.Encrypt(dbconn.Port));

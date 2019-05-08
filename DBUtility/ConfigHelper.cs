@@ -38,7 +38,7 @@ namespace MedDRASearch.DBUtility
         {
             DBConn dc = new DBConn();
             if (!File.Exists(ConfigFile))
-                WriteDBConfig(ConfigFile, "", "", "", "", "");
+                WriteDBConfig(ConfigFile, dc);
 
             XmlDocument xd = new XmlDocument();
             try
@@ -47,7 +47,7 @@ namespace MedDRASearch.DBUtility
             }
             catch (Exception)
             {
-                WriteDBConfig(ConfigFile, "", "", "", "", "");
+                WriteDBConfig(ConfigFile, dc);
                 xd.Load(ConfigFile);
             }
             XmlNode rootxn = xd.SelectSingleNode("MedMDRSearch");
@@ -63,7 +63,6 @@ namespace MedDRASearch.DBUtility
                         dc.Database = DESEncrypt.Decrypt(xe.GetAttribute("Database").ToString());
                         dc.UID = DESEncrypt.Decrypt(xe.GetAttribute("UID").ToString());
                         dc.PWD = DESEncrypt.Decrypt(xe.GetAttribute("PWD").ToString());
-                        //return dc;
                         break;
                 }
             }
@@ -80,7 +79,7 @@ namespace MedDRASearch.DBUtility
         /// <param name="uid">用户名</param>
         /// <param name="pwd">密码</param>
         /// <returns>保存成功返回true</returns>
-        public static bool WriteDBConfig(string ConfigFile,string server,string port,string database,string uid,string pwd)
+        public static bool WriteDBConfig(string ConfigFile,DBConn dbconn)
         {
             XmlDocument xmlDoc = new XmlDocument();
             XmlNode header = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
@@ -88,11 +87,11 @@ namespace MedDRASearch.DBUtility
             //创建一级节点
             XmlElement rootNode = xmlDoc.CreateElement("MedMDRSearch");
             XmlElement xn = xmlDoc.CreateElement("DBConnection");
-            xn.SetAttribute("Server", DESEncrypt.Encrypt(server));
-            xn.SetAttribute("Port", DESEncrypt.Encrypt(port));
-            xn.SetAttribute("Database", DESEncrypt.Encrypt(database));
-            xn.SetAttribute("UID", DESEncrypt.Encrypt(uid));
-            xn.SetAttribute("PWD", DESEncrypt.Encrypt(pwd));
+            xn.SetAttribute("Server", DESEncrypt.Encrypt(dbconn.Server));
+            xn.SetAttribute("Port", DESEncrypt.Encrypt(dbconn.Port));
+            xn.SetAttribute("Database", DESEncrypt.Encrypt(dbconn.Database));
+            xn.SetAttribute("UID", DESEncrypt.Encrypt(dbconn.UID));
+            xn.SetAttribute("PWD", DESEncrypt.Encrypt(dbconn.PWD));
             
             rootNode.AppendChild(xn);
             xmlDoc.AppendChild(rootNode);

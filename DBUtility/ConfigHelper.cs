@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Xml.XPath;
 using System.Xml;
 
@@ -37,8 +37,19 @@ namespace MedDRASearch.DBUtility
         public static DBConn GetDBConfig(string ConfigFile)
         {
             DBConn dc = new DBConn();
+            if (!File.Exists(ConfigFile))
+                WriteDBConfig(ConfigFile, "", "", "", "", "");
+
             XmlDocument xd = new XmlDocument();
-            xd.Load(ConfigFile);
+            try
+            {
+                xd.Load(ConfigFile);
+            }
+            catch (Exception)
+            {
+                WriteDBConfig(ConfigFile, "", "", "", "", "");
+                xd.Load(ConfigFile);
+            }
             XmlNode rootxn = xd.SelectSingleNode("MedMDRSearch");
             XmlNodeList xnl = rootxn.ChildNodes;
             foreach (XmlNode xn in xnl)
@@ -48,16 +59,16 @@ namespace MedDRASearch.DBUtility
                 {
                     case "DBConnection":
                         dc.Server = DESEncrypt.Decrypt(xe.GetAttribute("Server").ToString());
-                        dc.Port =  DESEncrypt.Decrypt(xe.GetAttribute("Port").ToString());
-                        dc.Database =  DESEncrypt.Decrypt(xe.GetAttribute("Database").ToString());
-                        dc.UID =  DESEncrypt.Decrypt(xe.GetAttribute("UID").ToString());
-                        dc.PWD =  DESEncrypt.Decrypt(xe.GetAttribute("PWD").ToString());
+                        dc.Port = DESEncrypt.Decrypt(xe.GetAttribute("Port").ToString());
+                        dc.Database = DESEncrypt.Decrypt(xe.GetAttribute("Database").ToString());
+                        dc.UID = DESEncrypt.Decrypt(xe.GetAttribute("UID").ToString());
+                        dc.PWD = DESEncrypt.Decrypt(xe.GetAttribute("PWD").ToString());
                         //return dc;
                         break;
                 }
             }
             return dc;
-       }
+        }
 
         /// <summary>
         /// 把数据库配置写入XML文件中

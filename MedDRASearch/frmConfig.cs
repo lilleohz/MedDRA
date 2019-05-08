@@ -20,14 +20,13 @@ namespace MedDRASearch
             dc.UID = txtUID.Text;
             dc.PWD = txtPWD.Text;
             DBUtility.ConfigHelper.WriteDBConfig(Application.StartupPath + "\\Config.xml", dc);
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void frmConfig_Load(object sender, EventArgs e)
         {
-            DBUtility.ConfigHelper.DBConn dc = new DBUtility.ConfigHelper.DBConn();
-            dc = DBUtility.ConfigHelper.GetDBConfig(Application.StartupPath + "\\Config.xml");
+            DBUtility.ConfigHelper.DBConn dc = DBUtility.ConfigHelper.GetDBConfig(Application.StartupPath + "\\Config.xml");
             txtServer.Text = dc.Server;
             txtPort.Text = dc.Port;
             txtUID.Text = dc.UID;
@@ -67,19 +66,18 @@ namespace MedDRASearch
 
             cbbDatabases.Items.Clear();
 
-            List<string> dbsl = new List<string>();
-            this.Cursor = Cursors.WaitCursor;
-            dbsl = DBUtility.DbHelperMySQL.DatabaseList(connstring);
+            Cursor = Cursors.WaitCursor;
+            List<string> dbsl = DBUtility.DbHelperMySQL.DatabaseList(connstring);
             foreach (string dbname in dbsl)
             {
                 cbbDatabases.Items.Add(dbname);
             }
-            this.Cursor = Cursors.Default;
+            Cursor = Cursors.Default;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel;
         }
     }
 }
